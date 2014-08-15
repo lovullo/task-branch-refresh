@@ -1,0 +1,62 @@
+#!/bin/bash
+# Resets branch to upstream and re-merges topics
+#
+#  Copyright (C) 2014 LoVullo Associates, Inc.
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+git rev-parse &>/dev/null || {
+  echo "error: must be run within a git repository" >&2
+  exit 1
+}
+
+# we depend on git-remerge to re-merge the topic branches
+which git-remerge &>/dev/null || {
+  echo "error: git-remerge not in PATH" >&2
+  exit 1
+}
+
+declare -r cwd="$(pwd)"
+declare -r gitdir="$cwd/$( git rev-parse --git-dir )"
+declare -r name="$( basename "$0" )"
+
+# enter a known directory to simplify sourcing
+cd "$( dirname "$0" )/../src" || {
+  echo 'error: failed to enter src directory' >&2
+  exit 1
+}
+
+source refresh.sh
+cd "$cwd"
+
+
+usage()
+{
+  cat <<EOM
+Usage: $name upstream timespec
+EOM
+
+  exit 64  # EX_USAGE
+}
+
+
+main()
+{
+  test $# -gt 1 || usage
+  do-refresh "$@"
+}
+
+main "$@"
+
