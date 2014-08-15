@@ -1,0 +1,49 @@
+#!/bin/bash
+# Refresh branches for each repository provided via stdin
+#
+#  Copyright (C) 2014 LoVullo Associates, Inc.
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+declare -r cwd="$( cd $( dirname "$0" ) && pwd -L )"
+
+
+main()
+{
+  while read url branch upstream timespec; do
+    (
+      local dest="${url##*[/:]}"
+
+      echo "$dest/{$branch -> $upstream}; re-merge since $timespec:"
+
+      # FIXME: we shouldn't know that "-old" is the suffix
+      local -r oldref="$branch-old"
+
+      # TODO: option to disable pushing
+      git clone "$url" "$dest" >&2 \
+        && cd "$dest" \
+        && git checkout "$branch" >&2 \
+        && "$cwd/branch-refresh" "$upstream" "$timespec" \
+        && git push --force origin "$oldref":"$oldref" \
+        && git push --force origin "$branch":"$branch" \
+        || exit
+
+      echo
+    ) || exit
+  done
+}
+
+main "$@"
+
