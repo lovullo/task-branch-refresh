@@ -26,7 +26,12 @@ main()
     (
       local dest="${url##*[/:]}"
 
-      echo "$dest/{$branch -> $upstream}; re-merge since $timespec:"
+      remsg='no re-merge'
+      if [ -n "$timespec" ]; then
+        remsg="re-merge since $timespec"
+      fi
+
+      echo "$dest/{$branch -> $upstream}; $remsg:"
 
       # FIXME: we shouldn't know that "-old" is the suffix
       local -r oldref="$branch-old"
