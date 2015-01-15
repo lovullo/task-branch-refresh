@@ -45,7 +45,11 @@ cd "$cwd"
 usage()
 {
   cat <<EOM
-Usage: $name upstream timespec
+Usage: $name upstream [timespec]
+Reset branch to UPSTREAM and optionally re-merge topic branches.
+
+If TIMESPEC is provided, topic branches merged into the currently checked
+out branch within the specific time period will be re-merged.
 EOM
 
   exit 64  # EX_USAGE
@@ -54,7 +58,7 @@ EOM
 
 main()
 {
-  test $# -gt 1 || usage
+  test $# -gt 0 -o $# -lt 2 || usage
   do-refresh "$@"
 }
 

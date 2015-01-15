@@ -61,8 +61,11 @@ do-refresh()
 
   echo "Created '$oldref' referencing current state of '$branch'" >&2
 
+  # re-merge will take place only if a timespec is provided
   git reset --hard "$upstream" >&2 \
     && create-guard-commit "$branch" >&2 \
-    && git remerge "$oldref" "$timespec"
+    && if [ -n "$timespec" ]; then \
+         git remerge "$oldref" "$timespec"; \
+       fi
 }
 

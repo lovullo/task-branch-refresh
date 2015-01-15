@@ -1,7 +1,8 @@
 # Git Branch Refresh
-Resets a development or topic branch *T* to upstream and re-merges all branches
-merged into *T* within the given timeframe. All re-merged branches are merged
-referencing the same commit that was last merged into *T*.
+Resets a development or topic branch *T* to upstream and optionally
+re-merges all branches merged into *T* within the given timeframe. All
+re-merged branches are merged referencing the same commit that was last
+merged into *T*.
 
 This script is most useful for branches that serve as a test bed for the
 integration of various features; various topic branches are merged into
